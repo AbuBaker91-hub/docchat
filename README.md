@@ -4,7 +4,7 @@ Upload PDFs, ask questions, get answers with citations that are checked against 
 source text before you ever see them - and an honest "not found" when your documents
 do not contain the answer.
 
-(60 second Loom video coming soon) | (live demo coming soon)
+[▶ Watch the 25-second demo video](docs/docchat-demo.mp4) | (live demo coming soon)
 
 ## 1. Problem
 
@@ -31,7 +31,7 @@ can be traced to a real passage, and if "we don't know" is a first-class answer.
 - Re-uploading the same file is a no-op (idempotency keys), and every pipeline stage
   writes an audit row.
 
-(60 second Loom video coming soon) | (live demo coming soon)
+[▶ Watch the 25-second demo video](docs/docchat-demo.mp4) | (live demo coming soon)
 
 | | |
 |---|---|
@@ -82,8 +82,10 @@ Pydantic schema; embeddings are local MiniLM (384-dim) or a deterministic stub.
   tokenizer - documented, deterministic, close enough for ~500-token chunks.
 - One answer prompt, no conversation memory: each question stands alone.
 - No auth/multi-tenancy: one shared document space per deployment.
-- `LLM_PROVIDER_ORDER=mock` (keyless demo) replays canned answers - the first chat
-  question gets the sample return-window answer, later ones an honest not-found.
+- `LLM_PROVIDER_ORDER=mock` (keyless demo) serves canned answers matched to the
+  question: the 20 gold questions (plus "What is the return window?") get their
+  cited answer, everything else an honest not-found. No key, no model, still fully
+  verified against the real chunks.
 
 ## 6. Run
 
@@ -106,6 +108,21 @@ For a fully offline, keyless demo: `EMBEDDER=stub LLM_PROVIDER_ORDER=mock make d
 3. First boot runs migrations and seeds the sample PDFs automatically (idempotent).
 4. Confirm `https://<app>.onrender.com/health` returns `{"ok": true}`.
 5. Rate limit stays on. Free Gemini quota is enough for demo traffic.
+
+### Deploy (Vercel serverless, keyless demo)
+
+`api/index.py` + `vercel.json` expose the app on Vercel's Python runtime;
+`requirements.txt` holds the runtime-only deps. Set `DATABASE_URL` (Neon pooled
+Postgres with pgvector), `LLM_PROVIDER_ORDER=mock`, `EMBEDDER=stub`. Cold starts
+run the idempotent migrations only; seed the demo database once from any machine:
+
+```
+set DATABASE_URL=postgresql://<user>:<pass>@<host>/<db>
+.venv\Scripts\python.exe -m scripts.seed_remote
+```
+
+(idempotent: migrations + ingest of the three sample PDFs with the stub embedder,
+so `/ask` and `/eval` work immediately; safe to re-run).
 
 ## 7. Tests
 

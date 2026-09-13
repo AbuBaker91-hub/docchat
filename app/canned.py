@@ -1,14 +1,55 @@
-"""Canned MockProvider responses for the keyless offline demo and the offline
-eval run (LLM_PROVIDER_ORDER=mock). Imported lazily; never used with real
-providers.
+"""Canned answers for the keyless offline demo and the offline eval run
+(LLM_PROVIDER_ORDER=mock). Imported lazily; never used with real providers.
 
 Quotes are copied verbatim from the sample PDFs so citation verification
 passes against the real ingested chunks.
+
+CannedAnswerProvider is a stateless mock provider: it extracts the question
+from the rendered prompt and answers the 20 gold questions (plus the demo
+return-window question) with their cited canned answer, everything else with
+an honest found=false. Stateless matters for the public serverless demo,
+where concurrent visitors would otherwise race through an ordered reply list.
 """
+
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+NOT_FOUND = {"answer": "", "citations": [], "confidence": 0.2, "found": False}
 
 
 def _cit(doc: str, page: int, quote: str) -> dict:
     return {"doc": doc, "page": page, "quote": quote}
+
+
+def _norm(text: str) -> str:
+    return " ".join(text.lower().split())
+
+
+def _gold_questions() -> list[str]:
+    lines = (ROOT / "samples" / "gold.jsonl").read_text(encoding="utf-8").splitlines()
+    return [json.loads(line)["question"] for line in lines if line.strip()]
+
+
+class CannedAnswerProvider:
+    """Duck-typed LLMProvider (complete(prompt, json_schema) -> str) that picks
+    the canned answer by the question inside the rendered answer prompt."""
+
+    name = "mock"
+
+    def __init__(self):
+        self._by_question = {
+            _norm(q): resp
+            for q, resp in zip(_gold_questions(), eval_responses(), strict=True)
+        }
+        self._by_question[_norm("What is the return window?")] = ask_responses()[0]
+
+    def complete(self, prompt: str, json_schema: dict) -> str:
+        m = re.search(r"Question:\s*(.+?)\s*Chunks \(JSON\):", prompt, re.DOTALL)
+        question = _norm(m.group(1)) if m else ""
+        return json.dumps(self._by_question.get(question, NOT_FOUND))
 
 
 POLICY = "store_policy_manual.pdf"

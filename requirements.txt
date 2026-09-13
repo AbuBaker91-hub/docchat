@@ -1,0 +1,6 @@
+# Runtime deps only (Vercel serverless keyless demo: EMBEDDER=stub, so no
+# sentence-transformers/torch). Dev tooling lives in pyproject [dev].
+aiforge-core @ git+https://github.com/AbuBaker91-hub/aiforge-core@v0.1.0
+fastapi>=0.115
+pypdf>=4.0
+python-multipart>=0.0.9

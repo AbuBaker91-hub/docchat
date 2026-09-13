@@ -34,17 +34,13 @@ def build_embedder():
     return Embedder()
 
 
-def _mock_router(responses: list) -> Router:
-    from aiforge_core.llm.providers import MockProvider
-
-    return Router([MockProvider({"answer": responses})], prompts_dir=PROMPTS_DIR)
-
-
 def build_router(for_eval: bool = False) -> Router:
     if os.getenv("LLM_PROVIDER_ORDER", "gemini,groq").strip().lower() == "mock":
-        from .canned import ask_responses, eval_responses
+        from .canned import CannedAnswerProvider
 
-        return _mock_router(eval_responses() if for_eval else ask_responses())
+        # stateless: picks the canned answer by the question in the prompt,
+        # so it works for /ask and /eval alike, even with concurrent visitors
+        return Router([CannedAnswerProvider()], prompts_dir=PROMPTS_DIR)
     return router_from_env(PROMPTS_DIR)
 
 
