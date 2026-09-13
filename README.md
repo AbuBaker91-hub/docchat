@@ -33,6 +33,13 @@ can be traced to a real passage, and if "we don't know" is a first-class answer.
 
 (60 second Loom video coming soon) | (live demo coming soon)
 
+| | |
+|---|---|
+| ![Answer with a verified citation chip](docs/screenshots/03-cited-answer.png) | ![Clicking a chip reveals the exact quoted passage](docs/screenshots/04-citation-passage.png) |
+| *An answer with its confidence badge and a verified citation chip* | *Clicking a chip reveals the exact quoted passage from the source PDF* |
+| ![Honest not-found with the three closest passages](docs/screenshots/05-not-found.png) | ![Documents list with page counts and status](docs/screenshots/02-documents-uploaded.png) |
+| *An unrelated question gets an honest "not found" plus the closest passages* | *Uploaded PDFs with page count and status; re-uploads never duplicate* |
+
 ## 3. Architecture
 
 ```mermaid
