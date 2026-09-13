@@ -1,0 +1,20 @@
+{"question": "What is the return window for purchases?", "expected_doc": "store_policy_manual.pdf", "expected_page": 1}
+{"question": "How long does standard shipping take?", "expected_doc": "store_policy_manual.pdf", "expected_page": 2}
+{"question": "Which payment methods are accepted?", "expected_doc": "store_policy_manual.pdf", "expected_page": 2}
+{"question": "What should I do if my item arrives damaged?", "expected_doc": "store_policy_manual.pdf", "expected_page": 1}
+{"question": "Does the store offer price matching?", "expected_doc": "store_policy_manual.pdf", "expected_page": 3}
+{"question": "Do gift cards expire?", "expected_doc": "store_policy_manual.pdf", "expected_page": 3}
+{"question": "How do I earn loyalty points in the rewards program?", "expected_doc": "store_policy_manual.pdf", "expected_page": 4}
+{"question": "What is the capacity of the kettle?", "expected_doc": "aurora_kettle_manual.pdf", "expected_page": 4}
+{"question": "How do I descale the kettle with vinegar?", "expected_doc": "aurora_kettle_manual.pdf", "expected_page": 3}
+{"question": "What should I do if the kettle does not turn on?", "expected_doc": "aurora_kettle_manual.pdf", "expected_page": 3}
+{"question": "Can I immerse the kettle in water?", "expected_doc": "aurora_kettle_manual.pdf", "expected_page": 1}
+{"question": "How do I select the water temperature on the kettle?", "expected_doc": "aurora_kettle_manual.pdf", "expected_page": 2}
+{"question": "What temperature is best for green tea?", "expected_doc": "aurora_kettle_manual.pdf", "expected_page": 2}
+{"question": "How long is the warranty on the kettle?", "expected_doc": "aurora_kettle_manual.pdf", "expected_page": 4}
+{"question": "What are the payment terms in the agreement?", "expected_doc": "service_contract_template.pdf", "expected_page": 2}
+{"question": "What is the late fee for late payments?", "expected_doc": "service_contract_template.pdf", "expected_page": 2}
+{"question": "How much notice is required to terminate the agreement for convenience?", "expected_doc": "service_contract_template.pdf", "expected_page": 3}
+{"question": "How long does confidentiality last after termination?", "expected_doc": "service_contract_template.pdf", "expected_page": 3}
+{"question": "What is the limitation of liability under the agreement?", "expected_doc": "service_contract_template.pdf", "expected_page": 4}
+{"question": "Which state law governs the agreement?", "expected_doc": "service_contract_template.pdf", "expected_page": 4}

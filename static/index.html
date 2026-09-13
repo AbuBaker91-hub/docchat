@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DocChat - ask your PDFs, get verified citations</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --line: #e3e6ea;
+    --ink: #1c2330; --muted: #68738a; --accent: #2456d6; --accent-soft: #e8eefc;
+    --ok: #177245; --warn: #a15c07; --bad: #b3261e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.55 "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  header {
+    padding: 14px 24px; background: var(--panel); border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  header h1 { margin: 0; font-size: 19px; }
+  header span { color: var(--muted); font-size: 13px; }
+  main {
+    display: grid; grid-template-columns: 320px 1fr; gap: 18px;
+    max-width: 1180px; margin: 18px auto; padding: 0 18px;
+    height: calc(100vh - 110px);
+  }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; }
+  .panel h2 { margin: 0; padding: 12px 16px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); border-bottom: 1px solid var(--line); }
+  #docs { flex: 1; overflow-y: auto; padding: 8px 12px; }
+  .doc { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 8px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .doc:last-child { border-bottom: 0; }
+  .doc .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .doc .meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge.ready { background: #e2f3e8; color: var(--ok); }
+  .badge.failed { background: #fbe4e2; color: var(--bad); }
+  .upload { border-top: 1px solid var(--line); padding: 12px 16px; }
+  .upload input[type=file] { display: none; }
+  .upload label {
+    display: block; text-align: center; padding: 14px; border: 2px dashed var(--line);
+    border-radius: 8px; color: var(--muted); cursor: pointer; font-size: 13px;
+  }
+  .upload label:hover { border-color: var(--accent); color: var(--accent); }
+  #upload-status { font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 16px; }
+  #chat { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 88%; padding: 10px 14px; border-radius: 12px; }
+  .msg.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.bot { align-self: flex-start; background: var(--bg); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+  .msg.bot.notfound { border-left: 3px solid var(--warn); }
+  .msg .conf { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .conf .badge.high { background: #e2f3e8; color: var(--ok); }
+  .conf .badge.mid { background: #fdf0dc; color: var(--warn); }
+  .conf .badge.low { background: #fbe4e2; color: var(--bad); }
+  .chips { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    background: var(--accent-soft); color: var(--accent); border: 1px solid #c8d7f7;
+    border-radius: 999px; padding: 2px 10px; font-size: 12px; cursor: pointer;
+  }
+  .chip:hover { background: #d7e3fb; }
+  .quote {
+    display: none; margin-top: 8px; padding: 10px 12px; background: #fffbe8;
+    border-left: 3px solid #e0b400; border-radius: 6px; font-size: 13px;
+  }
+  .quote.open { display: block; }
+  .quote .src { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  .passages { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .passage { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 13px; }
+  .passage .src { color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+  form#ask { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+  form#ask input {
+    flex: 1; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px;
+    font: inherit; outline: none;
+  }
+  form#ask input:focus { border-color: var(--accent); }
+  form#ask button {
+    padding: 10px 20px; background: var(--accent); color: #fff; border: 0;
+    border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  form#ask button:disabled { opacity: .5; cursor: default; }
+  .sys { align-self: center; color: var(--muted); font-size: 13px; }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; height: auto; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>DocChat</h1>
+  <span>answers with citations verified against your PDFs - honest "not found" otherwise</span>
+</header>
+<main>
+  <section class="panel">
+    <h2>Documents</h2>
+    <div id="docs"></div>
+    <div class="upload">
+      <label for="file">Upload a PDF<br><small>drop or click to browse</small></label>
+      <input type="file" id="file" accept="application/pdf">
+      <div id="upload-status"></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Chat</h2>
+    <div id="chat"></div>
+    <form id="ask">
+      <input id="question" placeholder="Ask something your documents answer..." autocomplete="off">
+      <button type="submit" id="send">Ask</button>
+    </form>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
