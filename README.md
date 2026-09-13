@@ -4,7 +4,7 @@ Upload PDFs, ask questions, get answers with citations that are checked against 
 source text before you ever see them - and an honest "not found" when your documents
 do not contain the answer.
 
-[▶ Watch the 25-second demo video](docs/docchat-demo.mp4) | (live demo coming soon)
+[▶ Watch the 25-second demo video](docs/docchat-demo.mp4) | [Try the live demo](https://docchat-mu-three.vercel.app)
 
 ## 1. Problem
 
@@ -31,7 +31,7 @@ can be traced to a real passage, and if "we don't know" is a first-class answer.
 - Re-uploading the same file is a no-op (idempotency keys), and every pipeline stage
   writes an audit row.
 
-[▶ Watch the 25-second demo video](docs/docchat-demo.mp4) | (live demo coming soon)
+[▶ Watch the 25-second demo video](docs/docchat-demo.mp4) | [Try the live demo](https://docchat-mu-three.vercel.app)
 
 | | |
 |---|---|
